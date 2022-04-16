@@ -1,0 +1,21 @@
+table{
+    border: 5px solid rgb(0, 0, 0);
+    border-collapse: collapse;
+    height: 400px;
+    width: 400px;
+    position: absolute;
+    top: 50px;
+    right: 470px;
+}
+td{
+    border: 1px solid black;
+    border-collapse: collapse;
+    height: 50px;
+    width: 50px;
+}
+.white{
+    background-color: white;
+}
+.black{
+    background-color: black;
+}
