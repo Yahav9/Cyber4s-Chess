@@ -12,10 +12,14 @@ td{
     border-collapse: collapse;
     height: 50px;
     width: 50px;
+    cursor: pointer;
 }
 .white{
-    background-color: white;
+    background-color: rgb(252, 249, 249);
 }
 .black{
-    background-color: black;
+    background-color: rgb(146, 33, 33);
+}
+.selected{
+    background-color: rgb(103, 209, 103);
 }
