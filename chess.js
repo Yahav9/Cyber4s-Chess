@@ -108,16 +108,58 @@ class Piece {
       this.type = type;
       this.player = player;
     }
-    
+    getPossibleMoves() {
+      let relativeMoves=[];
+      if (this.type === 'pawn') {
+        relativeMoves = this.getPawnRelativeMoves();
+      } else if (this.type === 'rook') {
+        // relativeMoves = this.getRookRelativeMoves();
+      } else if (this.type === 'knight') {
+        // relativeMoves = this.getKnightRelativeMoves()
+      } else if (this.type === 'bishop') {
+        // relativeMoves = this.getBishopRelativeMoves()
+      } else if (this.type === 'king') {
+        // relativeMoves = this.getKingRelativeMoves()
+      } else if (this.type === 'queen') {
+        // relativeMoves = this.getPQueenRelativeMoves()
+      }
+      let absoluteMoves = [];
+    for (let relativeMove of relativeMoves) {
+      const absoluteRow = this.row + relativeMove[0];
+      const absoluteCol = this.col + relativeMove[1];
+      absoluteMoves.push([absoluteRow, absoluteCol]);
     }
+    let filteredMoves = [];
+    for (let absoluteMove of absoluteMoves) {
+      const absoluteRow = absoluteMove[0];
+      const absoluteCol = absoluteMove[1];
+      if (absoluteRow >= 0 && absoluteRow <= 7 && absoluteCol >= 0 && absoluteCol <= 7) {
+        filteredMoves.push(absoluteMove);
+      }
+    }
+    return filteredMoves;
+    }
+
+    //possible moves for each piece
+    getPawnRelativeMoves(){
+      if (this.row===1 && this.player==='black'){
+        return [[1,0],[2,0]]
+      }else if(this.row!==1 && this.player==='black'){
+        return [[1,0]]
+      }else if(this.row===6 && this.player==='white'){
+        return [[-1,0],[-2,0]]
+      }else if(this.row!==6 && this.player==='white'){
+        return [[-1,0]]
+      }
+    }
+}
 
     function createChessBoard(){
         chessBoard = document.createElement('table');
         document.body.appendChild(chessBoard);
-        let selectedSquare;
-        for (let i = 1; i < 9; i++) {
+        for (let i = 0; i < 8; i++) {
             const chessRow = chessBoard.insertRow();
-            for (let j = 1; j < 9; j++) {
+            for (let j = 0; j < 8; j++) {
                 let square = chessRow.insertCell();
                 if (i % 2 === 0 && j % 2 === 0) {
                     square.className = 'white';
@@ -126,8 +168,7 @@ class Piece {
                 } else {
                     square.className = 'black';
                 }
-                square.id = `${9 - i}-${j}`;
-                square.addEventListener('click',onSquareClick);
+                square.addEventListener('click',(event)=>onSquareClick(event, i, j));
             }}
        pieces= getInitialPieces();
        for (let piece of pieces){
@@ -165,12 +206,26 @@ function addImage(square, player, type) {
 } 
 
 
-      function onSquareClick(event) {
-        if (selectedSquare !== undefined) {
-          selectedSquare.classList.remove('selected');
-        }
-        selectedSquare = event.currentTarget;
-        selectedSquare.classList.add('selected');
+
+
+      function onSquareClick(event,row,col) {
+          for (let k = 0; k < 8;k++) {
+            for (let l = 0; l < 8; l++) {
+              chessBoard.rows[k].cells[l].classList.remove('possible-move');
+            }
+          }
+          for (let piece of pieces) {
+            if (piece.row === row && piece.col === col) {
+              let possibleMoves = piece.getPossibleMoves();
+              for (let possibleMove of possibleMoves)
+              chessBoard.rows[possibleMove[0]].cells[possibleMove[1]].classList.add('possible-move');
+            }
+          }
+          if (selectedSquare !== undefined) {
+            selectedSquare.classList.remove('selected');
+          }
+          selectedSquare = event.currentTarget;
+          selectedSquare.classList.add('selected');
       }
 
 
