@@ -1,6 +1,7 @@
 let chessBoard;
 let selectedSquare;
 let boardData;
+let selectedPiece;
 
 
 class BoardData {
@@ -23,6 +24,15 @@ class BoardData {
   isPlayer(row, col, player){
 const piece= this.getPiece(row, col);
 return piece!==undefined && piece.player === player;
+  }
+
+  removePiece(row, col) {
+    for (let i = 0; i < this.pieces.length; i++) {
+      const piece = this.pieces[i];
+      if (piece.row === row && piece.col === col) {
+        this.pieces.splice(i, 1);
+      }
+    }
   }
 }
 
@@ -56,12 +66,6 @@ class Piece {
     } else if (this.type === 'queen') {
       moves = this.getQueenMoves(boardData);
     }
-    // let absoluteMoves = [];
-    // for (let relativeMove of relativeMoves) {
-    //   const absoluteRow = this.row + relativeMove[0];
-    //   const absoluteCol = this.col + relativeMove[1];
-    //   absoluteMoves.push([absoluteRow, absoluteCol]);
-    // }
     let filteredMoves = [];
     for (let absoluteMove of moves) {
       const absoluteRow = absoluteMove[0];
@@ -115,8 +119,6 @@ class Piece {
     if (boardData.isPlayer(position[0], position[1], this.getOpponent())) {
       result.push(position);
     }
-
-console.log(result)
     return result;
   }
 
@@ -217,11 +219,11 @@ function addImage(square, player, type) {
 }
 
 
-//click event
-function onSquareClick(event, row, col) {
+function showMovesForPiece(row, col) {
   for (let k = 0; k < 8; k++) {
     for (let l = 0; l < 8; l++) {
       chessBoard.rows[k].cells[l].classList.remove('possible-move');
+      chessBoard.rows[k].cells[l].classList.remove('selected');
     }
   }
   const piece = boardData.getPiece(row, col);
@@ -230,17 +232,50 @@ function onSquareClick(event, row, col) {
     for (let possibleMove of possibleMoves)
       chessBoard.rows[possibleMove[0]].cells[possibleMove[1]].classList.add('possible-move');
   }
-  if (selectedSquare !== undefined) {
-    selectedSquare.classList.remove('selected');
-  }
-  selectedSquare = event.currentTarget;
-  selectedSquare.classList.add('selected');
+  chessBoard.rows[row].cells[col].classList.add('selected');
+    selectedPiece = piece;
 }
 
+function tryMove(piece, row, col) {
+  const possibleMoves = piece.getPossibleMoves(boardData);
+  for (const possibleMove of possibleMoves) {
+    if (possibleMove[0] === row && possibleMove[1] === col) {
+      boardData.removePiece(row, col);
+      piece.row = row;
+      piece.col = col;
+      return true;
+    }
+  }
+  return false;
+}
 
-//creating the board and the pieces
-function createChessBoard() {
+//click event
+function onSquareClick(event, row, col) {
+  if (selectedPiece === undefined) {
+    showMovesForPiece(row, col);
+  } else {
+    if (tryMove(selectedPiece, row, col)) {
+      selectedPiece = undefined;
+      createChessBoard(boardData);
+    } else {
+      showMovesForPiece(row, col);
+    }
+  }
+}
+//creating board and pieces
+function initGame() {
+  boardData = new BoardData(getInitialPieces());
+  createChessBoard(boardData);
+}
+
+function createChessBoard(boardData) {
+  chessBoard= document.getElementById('chess-board');
+  if(chessBoard !== null){
+    chessBoard.remove();
+  }
+  
   chessBoard = document.createElement('table');
+  chessBoard.id = 'chess-board';
   document.body.appendChild(chessBoard);
   for (let i = 0; i < 8; i++) {
     const chessRow = chessBoard.insertRow();
@@ -256,11 +291,10 @@ function createChessBoard() {
       square.addEventListener('click', (event) => onSquareClick(event, i, j));
     }
   }
-  boardData = new BoardData(getInitialPieces());
   for (let piece of boardData.pieces) {
     addImage(chessBoard.rows[piece.row].cells[piece.col], piece.player, piece.type)
   }
 }
 
 
-window.addEventListener('load', createChessBoard)
+window.addEventListener('load', initGame)
