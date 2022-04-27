@@ -1,4 +1,5 @@
 table{
+    position: relative;
     border: 5px solid rgb(0, 0, 0);
     border-collapse: collapse;
     height: 400px;
@@ -26,3 +27,14 @@ td{
 .possible-move{
     background-color:rgb(235, 235, 124) ;
 }
+.winner-dialog {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    font-size: large;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 100px;
+    border-radius: 10px;
+    width: max-content;
+  }

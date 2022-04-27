@@ -71,6 +71,13 @@ function createChessBoard(boardData) {
   for (let piece of boardData.pieces) {
     addImage(chessBoard.rows[piece.row].cells[piece.col], piece.player, piece.type)
   }
+
+  if (game.winner !== undefined) {
+    const winnerPopup = document.createElement('div');
+    winnerPopup.textContent = game.winner + ' player wins!';
+    winnerPopup.classList.add('winner-dialog');
+    chessBoard.appendChild(winnerPopup)
+  }
 }
 
 
